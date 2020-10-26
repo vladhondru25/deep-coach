@@ -3,6 +3,9 @@ import json
 import datetime
 import time
 
+from platform import *
+from region import *
+
 
 # Read Champions Json
 with open('resources/champions_ids.json') as json_file:
@@ -22,4 +25,28 @@ class Riot_API:
             # "Origin": "https://developer.riotgames.com",
             "X-Riot-Token": PRIVATE_KEY
         }
+
+    def get_5x5_challengers(self, platform):
+        request = requests.get(PLATFORMS[platform]+'/lol/league/v4/challengerleagues/by-queue/'+'RANKED_SOLO_5x5', headers=self.header)
+        if request.status_code == 200:
+            return json.loads(request.text)
+        else:
+            print('Request for challenger players in {} failed. Status code={}.'.format(platform, request.status_code))
+            return None
+
+    def get_summoner(self, platform, summoner_name):
+        request = requests.get(PLATFORMS[platform]+'/lol/summoner/v4/summoners/by-name/'+summoner_name, headers=self.header)
+        if request.status_code == 200:
+            return json.loads(request.text)
+        else:
+            print('Request for summoner {} on {} failed. Status code={}.'.format(summoner_name, platform, request.status_code))
+            return None
+
+    def get_champions_masteries(self, platform, summoner_name, summoner_id):
+        request = requests.get(PLATFORMS[platform]+'/lol/champion-mastery/v4/champion-masteries/by-summoner/'+summoner_id, headers=self.header)
+        if request.status_code == 200:
+            return json.loads(masteries_request.text)
+        else:
+            print('Request for masteries for summoner {} on {} failed. Status code={}.'.format(summoner_name, platform, request.status_code))
+            return None
     
