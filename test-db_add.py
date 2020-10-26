@@ -78,11 +78,14 @@ if __name__ == "__main__":
                         # Add player to database
                         db.add_player_row((player[0], summoner['id'], player[2], platform, mastery_row_id))           
 
+        # Delete platform if all the challenger players were added in the respective platform
         for delete_platform in to_delete:
             del platform_dict[delete_platform]
             del challenger_players[delete_platform]
 
-        # Insert waiting time below
+        # Maintain 100 requests per 2minutes
+        riot_client.increment_limiter()
+        riot_client.verify_limiter()
 
     print('FINISH')
     sys.exit()

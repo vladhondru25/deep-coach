@@ -26,6 +26,15 @@ class Riot_API:
             "X-Riot-Token": PRIVATE_KEY
         }
 
+        self.limiter_counter = 0
+
+    def increment_limiter(self):
+        self.limiter_counter += 1
+    def verify_limiter(self):
+        if self.limiter_counter == 95:
+            time.sleep(120)
+            self.limiter_counter = 0
+
     def get_5x5_challengers(self, platform):
         request = requests.get(PLATFORMS[platform]+'/lol/league/v4/challengerleagues/by-queue/'+'RANKED_SOLO_5x5', headers=self.header)
         if request.status_code == 200:
