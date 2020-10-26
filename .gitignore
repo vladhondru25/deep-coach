@@ -1,1 +1,4 @@
 resources/MY_PRIVATE_KEY.txt
+resources/database.py
+.vscode/
+__pycache__/
