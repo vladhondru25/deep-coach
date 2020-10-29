@@ -6,7 +6,7 @@ import sys
 from resources.platform import *
 from resources.region import *
 from resources.database import *
-from resources.riot-api import *
+from resources.riot_api import *
 
 
 # CONSTANTS
@@ -58,7 +58,7 @@ if __name__ == "__main__":
                 player = challenger_players[platform].pop(0)
                 # Get summoner account details (encrypted Summoner Id)
                 summoner = riot_client.get_summoner(platform, summoner_name=player[0])
-                if summoner != None
+                if summoner != None:
                     # Get the masteries points for the player
                     champs_masteries = riot_client.get_champions_masteries(platform, summoner_name=player[0], summoner_id=summoner['id'])
                     if champs_masteries != None:
@@ -71,12 +71,14 @@ if __name__ == "__main__":
                                 # Calculate the last time the champion was played by the player
                                 last_time_played = datetime.date.today() - datetime.date.fromtimestamp(champ['lastPlayTime']/1000)
                                 if last_time_played < datetime.timedelta(days=21):
-                                    mastery_points_table[CHAMPIONS_NAMES[champ[championId]]] = champ['championPoints']
+                                    mastery_points_table[CHAMPIONS_NAMES[str(champ['championId'])]] = champ['championPoints']
                         # Add masteries points in the database
                         if len(mastery_points_table) > 0:
                             mastery_row_id = db.add_masteries_row(mastery_points_table)
-                        # Add player to database
-                        db.add_player_row((player[0], summoner['id'], player[2], platform, mastery_row_id))           
+                            # Add player to database
+                            db.add_player_row((player[0], summoner['id'], player[2], platform, mastery_row_id))  
+                        else:
+                            print('Player {} from {} has no champion masteries.'.format(player[0], platform))         
 
         # Delete platform if all the challenger players were added in the respective platform
         for delete_platform in to_delete:
@@ -88,38 +90,3 @@ if __name__ == "__main__":
         riot_client.verify_limiter()
 
     print('FINISH')
-    sys.exit()
-
-    
-
-    with open('temp.json', 'w') as f:
-        json.dump(challenger_players, f, indent=2)
-
-
-
-    # conn = psycopg2.connect(
-    #     host="localhost",
-    #     database="vlad",
-    #     user="vlad",
-    #     password="mypassword",
-    #     port="5432"
-    # )
-
-    # cur = conn.cursor()
-
-    # cur.execute(
-    # """
-    # CREATE TABLE IF NOT EXISTS challenger_players (
-    #     id SERIAL PRIMARY KEY,
-    #     summoner_name VARCHAR(20) NOT NULL,
-    #     summoner_encrypt_id VARCHAR(63) NOT NULL,
-    #     rank_order SMALLINT NOT NULL,
-    #     region VARCHAR(5) NOT NULL
-    # )
-    # """
-    # )
-    # cur.close()
-
-    # conn.commit()
-    # conn.close()
-

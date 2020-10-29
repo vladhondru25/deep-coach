@@ -3,8 +3,8 @@ import json
 import datetime
 import time
 
-from platform import *
-from region import *
+from resources.platform import *
+from resources.region import *
 
 
 # Read Champions Json
@@ -12,7 +12,7 @@ with open('resources/champions_ids.json') as json_file:
     CHAMPIONS_NAMES = json.load(json_file)
 
 # Read private key
-with open('MY_PRIVATE_KEY.txt') as pk_file:
+with open('resources/MY_PRIVATE_KEY.txt') as pk_file:
     PRIVATE_KEY = pk_file.readline()
 
 
@@ -54,7 +54,7 @@ class Riot_API:
     def get_champions_masteries(self, platform, summoner_name, summoner_id):
         request = requests.get(PLATFORMS[platform]+'/lol/champion-mastery/v4/champion-masteries/by-summoner/'+summoner_id, headers=self.header)
         if request.status_code == 200:
-            return json.loads(masteries_request.text)
+            return json.loads(request.text)
         else:
             print('Request for masteries for summoner {} on {} failed. Status code={}.'.format(summoner_name, platform, request.status_code))
             return None
